@@ -1,0 +1,416 @@
+CREATE TABLE administratori (
+	id_administrator number(6), -- pk
+	nume varchar2(20) NOT NULL,
+	prenume varchar2(20) NOT NULL,
+	id_manager number(6),
+	id_cont number(7) NOT NULL --fk
+);
+
+CREATE TABLE clienti (
+	id_client number(6),-- pk
+	nume varchar2(20) NOT NULL,
+	prenume varchar2(20) NOT NULL,
+	id_cont number(7) NOT NULL --fk
+);
+
+CREATE TABLE conturi (
+	id_cont number(7),-- pk
+	user_cont varchar2(32) NOT NULL,
+	parola_cont varchar2(128) NOT NULL,
+	email varchar2(64) NOT NULL, --unique
+	numar_telefon varchar2(12) NOT NULL, --unique
+	data_creare date
+);
+
+CREATE TABLE jocuri (
+	id_joc number(6),-- pk
+	nume varchar2(256) NOT NULL, --unique
+	cantitate number(5) NOT NULL,
+	pret number(8,2) NOT NULL,
+	id_producator number(3) NOT NULL, --fk
+	joc_de_baza number(6),
+	data_lansare date
+);
+
+
+CREATE TABLE producatori (
+	id_producator number(3),-- pk
+	nume varchar2(32) NOT NULL, --unique
+	tara varchar2(56) NOT NULL
+);
+
+
+CREATE TABLE comenzi (
+	id_comanda number(12), --pk
+	data_comanda date,
+	id_client number(6) NOT NULL --fk
+);
+
+CREATE TABLE rand_comenzi (
+	id_comanda number(12), -- fk compus
+	id_joc number(6) NOT NULL,-- fk compus
+	pret number(8,2),
+	cantitate number(5) NOT NULL
+);
+
+--pk-uri si fk-uri
+
+ALTER TABLE administratori
+ADD CONSTRAINT administratori_pk PRIMARY KEY (id_administrator);
+
+ALTER TABLE clienti
+ADD CONSTRAINT clienti_pk PRIMARY KEY (id_client);
+
+ALTER TABLE conturi
+ADD CONSTRAINT conturi_pk PRIMARY KEY (id_cont);
+
+ALTER TABLE jocuri
+ADD CONSTRAINT jocuri_pk PRIMARY KEY (id_joc);
+
+ALTER TABLE producatori
+ADD CONSTRAINT producatori_pk PRIMARY KEY (id_producator);
+
+ALTER TABLE comenzi
+ADD CONSTRAINT comenzi_pk PRIMARY KEY (id_comanda);
+
+ALTER TABLE administratori
+ADD CONSTRAINT administratori_fk FOREIGN KEY (id_cont)
+REFERENCES conturi (id_cont);
+
+ALTER TABLE clienti
+ADD CONSTRAINT clienti_fk FOREIGN KEY (id_cont)
+REFERENCES conturi (id_cont);
+
+ALTER TABLE jocuri
+ADD CONSTRAINT jocuri_fk FOREIGN KEY (id_producator)
+REFERENCES producatori (id_producator);
+
+ALTER TABLE comenzi
+ADD CONSTRAINT comenzi_fk FOREIGN KEY (id_client)
+REFERENCES clienti (id_client);
+
+ALTER TABLE rand_comenzi
+ADD CONSTRAINT rand_comenzi_fk1 FOREIGN KEY (id_comanda)
+REFERENCES comenzi (id_comanda);
+
+ALTER TABLE rand_comenzi
+ADD CONSTRAINT rand_comenzi_fk2 FOREIGN KEY (id_joc)
+REFERENCES jocuri (id_joc);
+
+--unique-uri
+
+ALTER TABLE conturi
+ADD CONSTRAINT clienti_uk1
+UNIQUE (numar_telefon);
+
+ALTER TABLE conturi
+ADD CONSTRAINT conturi_uk2
+UNIQUE (email);
+
+ALTER TABLE jocuri
+ADD CONSTRAINT jocuri_uk
+UNIQUE (nume);
+
+ALTER TABLE producatori
+ADD CONSTRAINT producatori_uk
+UNIQUE (nume);
+
+--verificari
+
+ALTER TABLE conturi
+ADD CONSTRAINT conturi_ck
+CHECK (LENGTH(email) > 10);
+
+--dezactivare CONSTRAINTS
+ALTER TABLE conturi DISABLE CONSTRAINT conturi_ck;
+
+--activare CONSTRAINTS
+ALTER TABLE conturi ENABLE CONSTRAINT conturi_ck;
+
+--stergere CONSTRAINTS
+ALTER TABLE conturi DROP CONSTRAINT conturi_ck;
+
+--redenumire tabela
+ALTER TABLE conturi RENAME TO accounts;
+ALTER TABLE accounts RENAME TO conturi;
+
+--stergere coloane
+ALTER TABLE jocuri DROP COLUMN data_lansare;
+
+--adaugare coloana
+ALTER TABLE jocuri ADD (data_lansare timestamp);
+
+--modificare coloana
+ALTER TABLE jocuri MODIFY (data_lansare date);
+
+--stergere si recuperare tabela
+DROP TABLE rand_comenzi;
+FLASHBACK TABLE rand_comenzi TO BEFORE DROP;
+
+
+--******************ACTUALIZARE DATE************************
+--inserare valori
+
+--LMD - INSERT
+INSERT INTO conturi VALUES (1, 'sorins', 'parola123', 'sorins@yahoo.com', '0717717070', sysdate);
+INSERT INTO conturi VALUES (2, 'niculaim', 'parola123', 'niculaimihai@yahoo.com', '0717717071', sysdate);
+INSERT INTO conturi VALUES (3, 'mounajedk', 'parola123', 'amuzant@yahoo.com', '0717717072', sysdate);
+INSERT INTO conturi VALUES (4, 'applec', 'parola123', 'oadresademail@yahoo.com', '0717717073', sysdate);
+INSERT INTO conturi VALUES (5, 'mocanua', 'parola123', 'fcdinamo@yahoo.com', '0717717074', sysdate);
+INSERT INTO conturi VALUES (6, 'popescud', 'parola123', 'merlin@yahoo.com', '0717717075', sysdate);
+INSERT INTO conturi VALUES (7, 'dorescuf', 'parola123', 'luna@yahoo.com', '0717717076', sysdate);
+INSERT INTO conturi VALUES (8, 'ionescur', 'parola123', 'ancsietate@yahoo.com', '0717717077', sysdate);
+INSERT INTO conturi VALUES (9, 'nitui', 'parola123', 'csieinfo@yahoo.com', '0717717078', sysdate);
+INSERT INTO conturi VALUES (10, 'nitud', 'parola123', 'infonumberone@yahoo.com', '0717717079', sysdate);
+
+INSERT INTO conturi VALUES (11, 'lionelm10', 'parola123', 'greatestofalltime@yahoo.com', '0017717070', sysdate);
+INSERT INTO conturi VALUES (12, 'cristianor7', 'parola123', 'welcometosaudi@yahoo.com', '0117717071', sysdate);
+INSERT INTO conturi VALUES (13, 'ronaldon9', 'parola123', 'random@yahoo.com', '0217717072', sysdate);
+INSERT INTO conturi VALUES (14, 'iordache', 'parola123', 'namidee@yahoo.com', '0317717073', sysdate);
+INSERT INTO conturi VALUES (15, 'mocanud', 'parola123', 'punlaintamplare@yahoo.com', '0417717074', sysdate);
+INSERT INTO conturi VALUES (16, 'hainoroc', 'parola123', 'email1@yahoo.com', '0517717075', sysdate);
+INSERT INTO conturi VALUES (17, 'bunadimineata', 'parola123', 'email2@yahoo.com', '0617717076', sysdate);
+INSERT INTO conturi VALUES (18, 'bunaziua', 'parola123', 'email3@yahoo.com', '0727717077', sysdate);
+INSERT INTO conturi VALUES (19, 'bunaseara', 'parola123', 'email4@yahoo.com', '0817717078', sysdate);
+INSERT INTO conturi VALUES (20, 'numeuser', 'parola123', 'email5@yahoo.com', '0917717079', sysdate);
+
+INSERT INTO administratori VALUES (1, 'Okay', 'Sorin-Alexandru', NULL, 1);
+INSERT INTO administratori VALUES (2, 'Niculai', 'Mihai', 1, 2);
+INSERT INTO administratori VALUES (3, 'Mounajed', 'Karim', 1, 3);
+INSERT INTO administratori VALUES (4, 'Apple', 'Cider', 1, 4);
+INSERT INTO administratori VALUES (5, 'Mocanu', 'Adriana', 4, 5);
+INSERT INTO administratori VALUES (6, 'Popescu', 'Dorel', 5, 6);
+INSERT INTO administratori VALUES (7, 'Dorescu', 'Florian', 8, 7);
+INSERT INTO administratori VALUES (8, 'Ionescu', 'Razvan', 9, 8);
+INSERT INTO administratori VALUES (9, 'Nitu', 'Iulia', 3, 9);
+INSERT INTO administratori VALUES (10, 'Nitu', 'Dragos', 2, 10);
+
+INSERT INTO clienti VALUES (1, 'Lionel', 'Messi', 11);
+INSERT INTO clienti VALUES (2, 'Cristiano', 'Ronaldo', 12);
+INSERT INTO clienti VALUES (3, 'Ronaldo', 'Nazario', 13);
+INSERT INTO clienti VALUES (4, 'iordache', 'larisa', 14);
+INSERT INTO clienti VALUES (5, 'Mocanu', 'Daniel', 15);
+INSERT INTO clienti VALUES (6, 'Noroc', 'Cefaci', 16);
+INSERT INTO clienti VALUES (7, 'Buna', 'Dimineata', 17);
+INSERT INTO clienti VALUES (8, 'Buna', 'Ziua', 18);
+INSERT INTO clienti VALUES (9, 'Buna', 'Seara', 19);
+INSERT INTO clienti VALUES (10, 'Nume', 'User', 20);
+
+INSERT INTO producatori VALUES (1, 'Valve', 'United States of America');
+INSERT INTO producatori VALUES (2, 'Ubisoft', 'United Kingdom');
+INSERT INTO producatori VALUES (3, 'Electronic Arts', 'Canada');
+INSERT INTO producatori VALUES (4, 'Activision Blizzard', 'France');
+INSERT INTO producatori VALUES (5, 'Epic Games', 'Canada');
+INSERT INTO producatori VALUES (6, 'PopCap Games', 'Spain');
+INSERT INTO producatori VALUES (7, 'Rockstar Games', 'Portugal');
+INSERT INTO producatori VALUES (8, 'Tencent Games', 'Estonia');
+INSERT INTO producatori VALUES (9, '2K', 'Romania');
+INSERT INTO producatori VALUES (10, 'Riot Games', 'Poland');
+
+
+INSERT INTO jocuri VALUES (1, 'Counter Strike Global Offensive', 157, 10.99, 1, NULL, to_date('12-04-2012', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (2, 'Assassins Creed Valhalla', 100, 40.99, 2, NULL, to_date('10-10-2021', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (3, 'Assassins Creed Valhalla: Dawn of Ragnarok', 83, 15.99, 2, 2, to_date('10-12-2021', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (4, 'Assassins Creed Valhalla: Wrath of the Druids', 73, 15.99, 2, 2, to_date('20-04-2022', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (5, 'League of Legends', 55, 20.99, 10, NULL, to_date('29-07-2009', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (6, 'WWE 2k23', 57, 30.99, 9, NULL, to_date('10-07-2022', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (7, 'Fifa 23', 987, 40.99, 3, NULL, to_date('30-09-2022', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (8, 'Pokemon ceva', 717, 18.99, 6, NULL, to_date('10-10-2005', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (9, 'World of Warcraft', 333, 10.99, 4, NULL, to_date('01-01-2001', 'DD-MM-YYYY'));
+INSERT INTO jocuri VALUES (10, 'Grand Theft Auto VI', 255, 69.99, 7, NULL, to_date('05-05-2013', 'DD-MM-YYYY'));
+
+INSERT INTO comenzi VALUES (100, sysdate, 1);
+INSERT INTO comenzi VALUES (101, sysdate, 2);
+INSERT INTO comenzi VALUES (102, sysdate, 3);
+INSERT INTO comenzi VALUES (103, sysdate, 4);
+INSERT INTO comenzi VALUES (104, sysdate, 5);
+INSERT INTO comenzi VALUES (105, sysdate, 6);
+INSERT INTO comenzi VALUES (106, sysdate, 7);
+INSERT INTO comenzi VALUES (107, sysdate, 8);
+INSERT INTO comenzi VALUES (108, sysdate, 9);
+INSERT INTO comenzi VALUES (109, sysdate, 10);
+
+INSERT INTO rand_comenzi VALUES (100, 1, 10.99, 2);
+INSERT INTO rand_comenzi VALUES (100, 2, 40.99, 1);
+INSERT INTO rand_comenzi VALUES (100, 3, 15.99, 1);
+INSERT INTO rand_comenzi VALUES (101, 7, 10.99, 2);
+INSERT INTO rand_comenzi VALUES (102, 8, 10.99, 4);
+INSERT INTO rand_comenzi VALUES (103, 9, 10.99, 1);
+INSERT INTO rand_comenzi VALUES (104, 6, 10.99, 1);
+INSERT INTO rand_comenzi VALUES (105, 5, 60.99, 2);
+INSERT INTO rand_comenzi VALUES (106, 1, 50.99, 1);
+INSERT INTO rand_comenzi VALUES (107, 1, 10.99, 5);
+INSERT INTO rand_comenzi VALUES (108, 1, 20.99, 2);
+INSERT INTO rand_comenzi VALUES (109, 1, 30.99, 2);
+INSERT INTO rand_comenzi VALUES (109, 1, 40.99, 2);
+
+--exemplificare LMD DELETE
+DELETE FROM comenzi WHERE id_comanda = 109;
+DELETE FROM rand_comenzi WHERE id_comanda = 109;
+
+--exemplificare LMD UPDATE
+
+UPDATE jocuri set pret = pret + 10 where id_joc = 1;
+
+
+
+--Exemple de interogări cât mai variate și relevante pentru tema aleasă (minim 20) care să combine
+--următoarele elemente:
+
+
+select * from administratori; 
+
+select a.nume, a.prenume, c.email, c.numar_telefon
+from administratori a, conturi c
+where a.id_cont = c.id_cont
+and a.id_administrator BETWEEN 1 and 5;
+
+
+select a.id_administrator, a.nume, a.prenume, a.id_manager -- Selectez administratori care au in nume NIT
+from administratori a
+where UPPER(nume) LIKE 'NIT%';
+
+
+select c.id_comanda, c.data_comanda, c.id_client
+from comenzi c, rand_comenzi rc
+where c.id_comanda = rc.id_comanda
+and c.id_comanda IN (100, 102);
+
+
+select id_administrator, nume, nvl(id_manager, 0), level from administratori --selectez ordinea ierarhica a administratorilor si afisez manager = 0 pentru cei fara manager.
+connect by prior id_administrator = id_manager
+start with id_administrator = 1
+order by level;
+
+
+select id_administrator, nume, prenume, id_manager, level-1, SYS_CONNECT_BY_PATH(id_administrator, '/') from administratori
+connect by prior id_administrator = id_manager
+start with id_administrator = 1
+order by level;
+
+
+select rc.id_comanda, rc.pret, rc.cantitate, sum(rc.pret * rc.cantitate) as "Valoare comanda"
+from comenzi co, clienti c, rand_comenzi rc
+where c.id_client = co.id_client
+and co.id_comanda = rc.id_comanda
+group by rc.id_comanda, rc.pret, rc.cantitate;
+
+
+update jocuri 
+set pret = pret * 1.1 
+where id_joc in (select rc.id_joc from rand_comenzi rc, comenzi c where rc.id_comanda = c.id_comanda and id_client = 1); -- cresc pretul cu 10% pentru jocurile ce au fost cumparate de clientul cu id 1.
+
+
+select j.id_joc, j.nume, sum(rc.pret * rc.cantitate) --selectez jocurile care au fost comandate in anul in care au fost create conturile administratorilor fara superiori.
+from jocuri j, rand_comenzi rc, comenzi c
+where rc.id_comanda = c.id_comanda
+and j.id_joc = rc.id_joc
+and EXTRACT(year from c.data_comanda) IN (select EXTRACT(year from c.data_creare) from conturi c, administratori a where c.id_cont = a.id_cont and id_manager is null)
+group by  j.id_joc, j.nume;
+
+
+select c.id_comanda, j.nume, sum(rc.pret*rc.cantitate) -- afisez comenzile care au o valoare mai mare sau egala cu 100
+from rand_comenzi rc, comenzi c, jocuri j
+where rc.id_comanda = c.id_comanda
+and rc.id_joc = j.id_joc
+group by c.id_comanda, j.nume
+having sum(rc.pret*rc.cantitate) >= 100;
+
+--Sortez comenzile pe categorii de valoare
+
+select c.id_comanda, j.nume, sum(rc.pret*rc.cantitate),
+CASE
+when sum(rc.pret*rc.cantitate) <= 50 then 'Comanda de valoare redusa'
+when sum(rc.pret*rc.cantitate) > 50 and sum(rc.pret*rc.cantitate) < 100 then 'Comanda de valoare medie'
+when sum(rc.pret*rc.cantitate) >= 100 then 'Comanda de valoare mare'
+end
+from rand_comenzi rc, comenzi c, jocuri j
+where rc.id_comanda = c.id_comanda
+and rc.id_joc = j.id_joc
+group by c.id_comanda, j.nume;
+
+
+select j.nume, j.data_lansare, p.nume
+from jocuri j, producatori p --afisez jocurile care s-au lansat intre zilele calendaristice 10 si 20
+where j.id_producator = p.id_producator
+and substr(data_lansare, 0, 2) in (10, 20)
+;
+
+
+select j.nume, j.data_lansare, j.joc_de_baza, --Afisez daca jocul este joc de baza sau este expansiune al unui joc existent.
+decode(j.joc_de_baza, NULL, 'Joc de baza', 'Expansiune')
+from jocuri j;
+
+--afisezs conturile administratorilor care au fost create in acelasi an cu anul sistemului.
+
+select c.id_cont, c.user_cont, a.nume || ' ' || a.prenume, to_char(c.data_creare, 'YYYY') 
+from conturi c, administratori a
+where a.id_cont = c.id_cont
+and extract(year from c.data_creare) in extract(year from sysdate);
+
+--selectez jocurile care au fost comandate si care au pretul asemanator ca pretul din tabela de jocuri.(subcereri)
+
+select j.id_joc, j.nume, j.pret
+from jocuri j
+where j.id_joc in (select rc.id_joc from rand_comenzi rc, comenzi c where rc.id_comanda = c.id_comanda and rc.pret in (select j.pret from jocuri j));
+
+--creare tabela virtuala de comenzi unde apare si valoarea totala a comenzilor
+
+CREATE OR REPLACE VIEW rand_comenzi_total_maimic_100
+as 
+select c.id_comanda, c.data_comanda, c.id_client, sum(rc.pret*rc.cantitate) as valoare
+from comenzi c, rand_comenzi rc
+where c.id_comanda = rc.id_comanda
+group by c.id_comanda, c.data_comanda, c.id_client
+order by c.id_comanda;
+
+--creare sinonim PRODUSE pentru tabela Jocuri
+
+CREATE SYNONYM produse FOR jocuri;
+
+--Creare indexpe tabela administratori pe coloana de nume
+
+CREATE INDEX administratori_index ON administratori(nume);
+
+--Creare secventa pentru tabela clienti
+
+CREATE SEQUENCE seq_id_client
+start with 3 increment by 1
+maxvalue 11;
+
+-- union, minus, INTERSECT
+--afisez toti administratorii si clientii carora le incepe numele cu litera M
+
+select nume, prenume, id_cont
+from administratori
+where UPPER(nume) like 'M%'
+union
+select nume, prenume, id_cont
+from clienti
+where UPPER(nume) like 'M%';
+
+--afisez toti administratorii carora nu le incepe numele cu litera N
+
+select nume, prenume, id_cont
+from administratori
+minus
+select nume, prenume, id_cont
+from administratori
+where UPPER(nume) like 'N%';
+
+--afisez jocurile ce au fost plasate intr-o comanda.
+
+select id_joc
+from jocuri
+intersect
+select id_joc
+from rand_comenzi;
+
+-- Creare tabela cu select:
+CREATE TABLE rand_comenzi_2 as SELECT * FROM rand_comenzi where 1=0;
+select * from rand_comenzi_2;
+
+--delete cu SELECT
+delete from jocuri where id_joc in (select id_administrator from administratori where id_manager is null);
+
+select * from jocuri;
